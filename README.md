@@ -13,7 +13,7 @@ This homelab serves as a safe, isolated environment where I can:
 
 ## 🛠️ Lab Environment
 
-**Virtualization Platform:** KVM/QEMU on Pop!_OS
+**Virtualization Platform:** KVM/QEMU on Fedora 43
 
 **Virtual Machines:**
 - **Kali Linux** - Primary attacking machine with penetration testing tools
