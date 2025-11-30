@@ -27,9 +27,25 @@ Disk: ~8GB (pre-configured image)
 Network: NAT (default)
 OS: Ubuntu 8.04 (intentionally outdated)
 
+Windows Server 2022 - Domain controller and server administration practice
+
+RAM: 4GB
+CPUs: 2
+Disk: 50GB
+Network: NAT (default)
+
+Windows 11 Pro - Windows client for domain joining and endpoint testing
+
+RAM: 4GB
+CPUs: 4
+Disk: 128GB
+Network: NAT (default)
+
 Setup Process
+
 1. Kali Linux Installation
 Downloaded the official Kali Linux ISO from kali.org and created a new VM in virt-manager with standard installation settings.
+
 2. Metasploitable 2 Setup
 Download and Conversion:
 bash# Download Metasploitable 2
@@ -44,6 +60,7 @@ qemu-img convert -f vmdk -O qcow2 Metasploitable.vmdk metasploitable2.qcow2
 
 # Move to libvirt images directory
 sudo mv metasploitable2.qcow2 /var/lib/libvirt/images/
+
 VM Creation:
 
 Used virt-manager to import the existing disk image
