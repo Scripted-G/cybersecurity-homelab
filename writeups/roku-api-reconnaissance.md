@@ -12,7 +12,7 @@ Conducted reconnaissance and interaction with a Roku streaming device to demonst
 
 ## Lab Environment
 - **Environment Type:** Personal home network (authorized testing)
-- **Attack Platform:** Pop!_OS workstation with Nmap and curl
+- **Attack Platform:** Arch Linux workstation with Nmap and curl
 - **Target Device:** Roku 3920RW streaming player
 
 ## Tools Used
