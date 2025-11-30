@@ -1,54 +1,87 @@
-Cybersecurity Homelab Setup
-Overview
-This document outlines the setup of my cybersecurity homelab environment using KVM/QEMU virtualization on Linux. The lab consists of two virtual machines: Kali Linux (attacker) and Metasploitable 2 (vulnerable target), configured for hands-on penetration testing practice.
-Environment Details
-Host System:
+# Cybersecurity Homelab Setup
 
-OS: Arch Linux
-Virtualization: KVM/QEMU with virt-manager
-CPU: AMD Ryzen 9 9900X
-RAM: 32 GB
+## Overview
 
-Virtual Machines:
+This document outlines the setup of my cybersecurity homelab environment using KVM/QEMU virtualization on Arch Linux. The lab provides a safe, isolated environment for practicing penetration testing, system administration, and security operations.
 
-Kali Linux - Primary penetration testing platform
+## Host System
 
-RAM: 4GB
-CPUs: 4
-Disk: 60GB
-Network: NAT (default)
+| Component | Details |
+|-----------|---------|
+| OS | Arch Linux |
+| Virtualization | KVM/QEMU with virt-manager |
+| CPU | AMD Ryzen 9 9900X |
+| RAM | 32 GB |
 
+## Virtual Machines
 
-Metasploitable 2 - Intentionally vulnerable target system
+### Kali Linux
+Primary penetration testing platform with security tools.
 
-RAM: 512MB
-CPUs: 1
-Disk: ~8GB (pre-configured image)
-Network: NAT (default)
-OS: Ubuntu 8.04 (intentionally outdated)
+| Resource | Allocation |
+|----------|------------|
+| RAM | 4 GB |
+| CPUs | 4 |
+| Disk | 60 GB |
+| Network | NAT (default) |
 
-Windows Server 2022 - Domain controller and server administration practice
+### Metasploitable 2
+Intentionally vulnerable target system for exploitation practice.
 
-RAM: 4GB
-CPUs: 2
-Disk: 50GB
-Network: NAT (default)
+| Resource | Allocation |
+|----------|------------|
+| RAM | 512 MB |
+| CPUs | 1 |
+| Disk | ~8 GB (pre-configured image) |
+| Network | NAT (default) |
+| OS | Ubuntu 8.04 (intentionally outdated) |
 
-Windows 11 Pro - Windows client for domain joining and endpoint testing
+### Windows Server 2022
+Domain controller and server administration practice.
 
-RAM: 4GB
-CPUs: 4
-Disk: 128GB
-Network: NAT (default)
+| Resource | Allocation |
+|----------|------------|
+| RAM | 4 GB |
+| CPUs | 2 |
+| Disk | 50 GB |
+| Network | NAT (default) |
 
-Setup Process
+### Windows 11 Pro
+Windows client for domain joining and endpoint testing.
 
-1. Kali Linux Installation
-Downloaded the official Kali Linux ISO from kali.org and created a new VM in virt-manager with standard installation settings.
+| Resource | Allocation |
+|----------|------------|
+| RAM | 4 GB |
+| CPUs | 4 |
+| Disk | 128 GB |
+| Network | NAT (default) |
 
-2. Metasploitable 2 Setup
-Download and Conversion:
-bash# Download Metasploitable 2
+## Network Configuration
+
+All VMs are connected to the default NAT network (`virbr0`) which provides:
+
+- Isolation from the host's physical network
+- Internet access for updates and tool downloads
+- VM-to-VM communication on the same subnet (192.168.122.0/24)
+
+## Setup Instructions
+
+### Kali Linux
+
+1. Download the official Kali Linux ISO from [kali.org](https://www.kali.org/get-kali/)
+2. Open virt-manager and create a new VM
+3. Select the downloaded ISO as installation media
+4. Allocate resources (4 GB RAM, 4 CPUs, 60 GB disk)
+5. Complete the standard Kali installation
+
+### Metasploitable 2
+
+Metasploitable 2 is distributed as a VMware image and needs to be converted for KVM.
+
+**Download and convert:**
+
+```bash
+# Download Metasploitable 2
 wget https://sourceforge.net/projects/metasploitable/files/Metasploitable2/metasploitable-linux-2.0.0.zip
 
 # Extract the archive
@@ -60,69 +93,81 @@ qemu-img convert -f vmdk -O qcow2 Metasploitable.vmdk metasploitable2.qcow2
 
 # Move to libvirt images directory
 sudo mv metasploitable2.qcow2 /var/lib/libvirt/images/
+```
 
-VM Creation:
+**Create the VM:**
 
-Used virt-manager to import the existing disk image
-Selected "Ubuntu 8.04" as the OS type
-Allocated minimal resources (512MB RAM, 1 CPU)
-Connected to default NAT network
+1. Open virt-manager
+2. Select "Import existing disk image"
+3. Browse to `/var/lib/libvirt/images/metasploitable2.qcow2`
+4. Set OS type to "Ubuntu 8.04"
+5. Allocate minimal resources (512 MB RAM, 1 CPU)
+6. Connect to the default NAT network
 
-3. Network Configuration
-Both VMs are connected to the default NAT network (virbr0) which provides:
+**Default credentials:** `msfadmin` / `msfadmin`
 
-Isolation from the host network
-Internet access for the Kali VM (for updates and tool downloads)
-VM-to-VM communication on the same subnet
+### Windows Server 2022
 
-Network verification:
-bash# From Metasploitable 2
-ip addr show
-# IP: 192.168.122.151
+1. Download the Windows Server 2022 ISO from Microsoft Evaluation Center
+2. Open virt-manager and create a new VM
+3. Select the downloaded ISO as installation media
+4. Allocate resources (4 GB RAM, 2 CPUs, 50 GB disk)
+5. Complete the Windows Server installation
+6. Install VirtIO drivers for optimal performance (optional but recommended)
 
-# From Kali
-ping 192.168.122.151
-# Successful response confirms connectivity
-4. SSH Access Configuration
-Initial Connection:
-Metasploitable 2 uses older SSH key algorithms that modern SSH clients reject by default. Initial connection required compatibility flags:
-bashssh -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedKeyTypes=+ssh-rsa msfadmin@192.168.122.151
-Permanent Configuration:
-Created an SSH config file for easier access:
-bashnano ~/.ssh/config
-Added the following configuration:
+### Windows 11 Pro
+
+1. Download the Windows 11 ISO from Microsoft
+2. Open virt-manager and create a new VM
+3. Select the downloaded ISO as installation media
+4. Allocate resources (4 GB RAM, 4 CPUs, 128 GB disk)
+5. Enable TPM 2.0 and Secure Boot in VM settings (required for Windows 11)
+6. Complete the Windows 11 installation
+7. Install VirtIO drivers for optimal performance (optional but recommended)
+
+## SSH Access to Metasploitable 2
+
+Metasploitable 2 uses older SSH algorithms that modern clients reject by default.
+
+**One-time connection:**
+
+```bash
+ssh -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedKeyTypes=+ssh-rsa msfadmin@192.168.122.151
+```
+
+**Permanent configuration:**
+
+Add the following to `~/.ssh/config`:
+
+```
 Host metasploitable
     HostName 192.168.122.151
     User msfadmin
     HostKeyAlgorithms +ssh-rsa
     PubkeyAcceptedKeyTypes +ssh-rsa
-Now can connect simply with:
-bashssh metasploitable
+```
+
+Then connect with:
+
+```bash
+ssh metasploitable
 # Password: msfadmin
-5. Initial Reconnaissance
-Basic port scan from Kali:
-bashnmap -sV 192.168.122.151
-Confirmed SSH service running on port 22 and multiple other services (to be explored in future exercises).
-Security Considerations
+```
 
-Isolation: VMs are on an isolated NAT network, separate from the host's physical network
-No Updates: Metasploitable 2 is intentionally NOT updated to preserve vulnerabilities for practice
-Credentials: Default credentials (msfadmin/msfadmin) are used as this is a practice environment
-Snapshots: VM snapshots should be taken before major exploitation attempts for easy recovery
+## Security Considerations
 
-Next Steps
+- **Isolation**: VMs are on an isolated NAT network, separate from the host's physical network
+- **No Updates**: Metasploitable 2 is intentionally NOT updated to preserve vulnerabilities
+- **Snapshots**: Take VM snapshots before major changes for easy recovery
+- **Legal**: Only test on systems you own or have explicit permission to test
 
-Complete basic reconnaissance of all services on Metasploitable 2
-Practice common vulnerability scanning techniques
-Document exploitation attempts and findings
-Expand lab with additional vulnerable VMs as skills progress
+## Resources
 
-Resources
+- [Metasploitable 2 Download](https://sourceforge.net/projects/metasploitable/)
+- [Kali Linux Documentation](https://www.kali.org/docs/)
+- [Rapid7 Metasploitable Guide](https://docs.rapid7.com/metasploit/metasploitable-2/)
+- [Windows Server Evaluation](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2022)
 
-Metasploitable 2 Download
-Kali Linux Documentation
-Rapid7 Metasploitable Guide
+---
 
-
-Date: November 15, 2025
-Status: Lab operational and ready for practice
+*Last Updated: November 2025*
