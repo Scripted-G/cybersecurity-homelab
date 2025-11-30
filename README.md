@@ -127,7 +127,7 @@ This repository is actively maintained and regularly updated with:
 
 ## 📫 Connect
 
-- **LinkedIn:** [linkedin.com/in/gabriel-orta-cyber](https://linkedin.com/in/gabriel-orta)
+- **LinkedIn:** [linkedin.com/in/gabriel-orta](https://linkedin.com/in/gabriel-orta)
 - **GitHub:** [github.com/Scripted-G](https://github.com/Scripted-G)
 
 ---
